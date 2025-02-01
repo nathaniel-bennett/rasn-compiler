@@ -2,13 +2,15 @@
 use internal_macros::EnumDebug;
 use std::error::Error;
 
+use entropic::prelude::*;
+
 use super::{
     error::{GrammarError, GrammarErrorType},
     information_object::{InformationObjectFields, ObjectSet},
     ASN1Type, ASN1Value, IntegerType,
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Entropic, PartialEq)]
 pub struct OptionalMarker();
 
 impl From<&str> for OptionalMarker {
@@ -17,15 +19,15 @@ impl From<&str> for OptionalMarker {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Entropic)]
 pub struct RangeSeperator();
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ExtensionMarker();
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum Constraint {
     SubtypeConstraint(ElementSet),
     TableConstraint(TableConstraint),
@@ -118,7 +120,7 @@ impl Constraint {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ContentConstraint {
     Containing(ASN1Type),
     EncodedBy(ASN1Value),
@@ -151,7 +153,7 @@ impl From<(ASN1Type, ASN1Value)> for ContentConstraint {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum Parameter {
     ValueParameter(ASN1Value),
     TypeParameter(ASN1Type),
@@ -161,14 +163,14 @@ pub enum Parameter {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum SetOperator {
     Intersection,
     Union,
     Except,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct CompositeConstraint {
     pub base_constraint: Box<Constraint>,
     pub operation: Vec<(SetOperator, Box<Constraint>)>,
@@ -203,7 +205,7 @@ impl
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ComponentPresence {
     Absent,
     Present,
@@ -212,7 +214,7 @@ pub enum ComponentPresence {
 
 /// Representation of a component constraint used for subtyping
 /// in ASN1 specifications
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct InnerTypeConstraint {
     pub is_partial: bool,
     pub constraints: Vec<ConstrainedComponent>,
@@ -220,7 +222,7 @@ pub struct InnerTypeConstraint {
 
 /// Representation of a single component within a component constraint
 /// in ASN1 specifications
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ConstrainedComponent {
     pub identifier: String,
     pub constraints: Vec<Constraint>,
@@ -229,7 +231,7 @@ pub struct ConstrainedComponent {
 
 /// Representation of a range constraint used for subtyping
 /// in ASN1 specifications
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ValueConstraint {
     pub min_value: Option<ASN1Value>,
     pub max_value: Option<ASN1Value>,
@@ -279,7 +281,7 @@ impl From<(ASN1Value, RangeSeperator, ASN1Value, ExtensionMarker)> for ValueCons
 /// Representation of a table constraint used for subtyping
 /// in ASN1 specifications
 /// _See: ITU-T X.682 (02/2021) 10_
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct TableConstraint {
     pub object_set: ObjectSet,
     pub linked_fields: Vec<RelationalConstraint>,
@@ -296,7 +298,7 @@ impl From<(ObjectSet, Option<Vec<RelationalConstraint>>)> for TableConstraint {
 
 /// Representation of a table's relational constraint
 /// _See: ITU-T X.682 (02/2021) 10.7_
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct RelationalConstraint {
     pub field_name: String,
     /// The level is null if the field is in the outermost object set of the declaration.
@@ -315,7 +317,7 @@ impl From<(usize, &str)> for RelationalConstraint {
 
 /// Representation of a pattern constraint
 /// _See: ITU-T X.680 (02/2021) 51.9_
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct PatternConstraint {
     pub pattern: String,
 }
@@ -330,7 +332,7 @@ impl From<&str> for PatternConstraint {
 
 /// Representation of a user-defined constraint
 /// _See: ITU-T X.682 (02/2021) 9_
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct UserDefinedConstraint {
     pub definition: String,
 }
@@ -345,7 +347,7 @@ impl From<&str> for UserDefinedConstraint {
 
 /// Representation of a property settings constraint
 /// _See: ITU-T X.680 (02/2021) 51.10_
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct PropertySettings {
     pub property_settings_list: Vec<PropertyAndSettingsPair>,
 }
@@ -358,7 +360,7 @@ impl From<Vec<&str>> for PropertySettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum PropertyAndSettingsPair {
     Basic(BasicSettings),
     Date(DateSettings),
@@ -406,7 +408,7 @@ pub trait PropertySetting {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum BasicSettings {
     Date,
     Time,
@@ -471,7 +473,7 @@ impl PropertySetting for DateSettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum DateSettings {
     Century,
     Year,
@@ -507,7 +509,7 @@ impl PropertySetting for YearSettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum YearSettings {
     Basic,
     Proleptic,
@@ -550,7 +552,7 @@ impl PropertySetting for TimeSettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum TimeSettings {
     Hour,
     HourMinute,
@@ -583,7 +585,7 @@ impl PropertySetting for LocalOrUtcSettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum LocalOrUtcSettings {
     Local,
     Utc,
@@ -615,7 +617,7 @@ impl PropertySetting for IntervalTypeSettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum IntervalTypeSettings {
     StartAndEnd,
     Duration,
@@ -646,7 +648,7 @@ impl PropertySetting for StartEndPointSettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum StartEndPointSettings {
     Date,
     Time,
@@ -674,7 +676,7 @@ impl PropertySetting for RecurrenceSettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum RecurrenceSettings {
     Unlimited,
     Recurrences(usize),
@@ -701,7 +703,7 @@ impl PropertySetting for MidnightSettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum MidnightSettings {
     StartOfDay,
     EndOfDay,
@@ -709,7 +711,7 @@ pub enum MidnightSettings {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum SubtypeElement {
     SingleValue {
         value: ASN1Value,
@@ -781,7 +783,7 @@ impl
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ElementSet {
     pub set: ElementOrSetOperation,
     pub extensible: bool,
@@ -798,13 +800,13 @@ impl From<(ElementOrSetOperation, Option<ExtensionMarker>)> for ElementSet {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ElementOrSetOperation {
     Element(SubtypeElement),
     SetOperation(SetOperation),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct SetOperation {
     pub base: SubtypeElement, //TODO: Handle exclusions
     pub operator: SetOperator,

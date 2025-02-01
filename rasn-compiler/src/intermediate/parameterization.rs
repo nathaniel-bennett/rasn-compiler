@@ -1,6 +1,8 @@
 use super::ASN1Type;
 
-#[derive(Debug, Clone, PartialEq)]
+use entropic::prelude::*;
+
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct Parameterization {
     pub parameters: Vec<ParameterizationArgument>,
 }
@@ -11,7 +13,7 @@ impl From<Vec<ParameterizationArgument>> for Parameterization {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ParameterizationArgument {
     pub dummy_reference: String,
     pub param_governor: ParameterGovernor,
@@ -44,7 +46,7 @@ impl From<(&str, &str)> for ParameterizationArgument {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, Entropic, PartialEq)]
 pub enum ParameterGovernor {
     #[default]
     None,

@@ -1,8 +1,10 @@
 use crate::lexer::asn1_value;
 
+use entropic::prelude::*;
+
 use super::{constraints::*, *};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ToplevelInformationDefinition {
     pub comments: String,
     pub name: String,
@@ -27,7 +29,7 @@ impl From<(&str, ASN1Information, &str)> for ToplevelInformationDefinition {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ClassLink {
     ByName(String),
     ByReference(InformationObjectClass),
@@ -116,7 +118,7 @@ impl
 /// The possible types of an ASN1 information object.
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ASN1Information {
     ObjectClass(InformationObjectClass),
     ObjectSet(ObjectSet),
@@ -125,7 +127,7 @@ pub enum ASN1Information {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum SyntaxExpression {
     Required(SyntaxToken),
     Optional(Vec<SyntaxExpression>),
@@ -133,7 +135,7 @@ pub enum SyntaxExpression {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum SyntaxApplication {
     ObjectSetDeclaration(ObjectSet),
     ValueReference(ASN1Value),
@@ -237,7 +239,7 @@ impl SyntaxApplication {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum SyntaxToken {
     Literal(String),
     Comma,
@@ -278,7 +280,7 @@ impl From<&str> for SyntaxToken {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct InformationObjectSyntax {
     pub expressions: Vec<SyntaxExpression>,
 }
@@ -313,7 +315,7 @@ impl InformationObjectSyntax {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct InformationObjectClass {
     pub fields: Vec<InformationObjectClassField>,
     pub syntax: Option<InformationObjectSyntax>,
@@ -340,7 +342,7 @@ impl
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct InformationObjectClassField {
     pub identifier: ObjectFieldIdentifier,
     pub ty: Option<ASN1Type>,
@@ -379,7 +381,7 @@ impl
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ObjectFieldIdentifier {
     SingleValue(String),
     MultipleValue(String),
@@ -394,7 +396,7 @@ impl ObjectFieldIdentifier {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct InformationObject {
     pub class_name: String,
     pub fields: InformationObjectFields,
@@ -402,7 +404,7 @@ pub struct InformationObject {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum InformationObjectFields {
     DefaultSyntax(Vec<InformationObjectField>),
     CustomSyntax(Vec<SyntaxApplication>),
@@ -410,7 +412,7 @@ pub enum InformationObjectFields {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ObjectSetValue {
     Reference(String),
     Inline(InformationObjectFields),
@@ -428,7 +430,7 @@ impl From<InformationObjectFields> for ObjectSetValue {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ObjectSet {
     pub values: Vec<ObjectSetValue>,
     pub extensible: Option<usize>,
@@ -459,7 +461,7 @@ impl
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum InformationObjectField {
     TypeField(TypeField),
     FixedValueField(FixedValueField),
@@ -477,7 +479,7 @@ impl InformationObjectField {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct FixedValueField {
     pub identifier: String,
     pub value: ASN1Value,
@@ -492,7 +494,7 @@ impl From<(ObjectFieldIdentifier, ASN1Value)> for InformationObjectField {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct TypeField {
     pub identifier: String,
     pub ty: ASN1Type,
@@ -507,7 +509,7 @@ impl From<(ObjectFieldIdentifier, ASN1Type)> for InformationObjectField {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ObjectSetField {
     pub identifier: String,
     pub value: ObjectSet,
@@ -522,7 +524,7 @@ impl From<(ObjectFieldIdentifier, ObjectSet)> for InformationObjectField {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct InformationObjectFieldReference {
     pub class: String,
     pub field_path: Vec<ObjectFieldIdentifier>,

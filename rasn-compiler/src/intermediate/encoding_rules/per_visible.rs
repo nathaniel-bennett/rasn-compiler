@@ -6,6 +6,8 @@ use crate::intermediate::{
 };
 use std::{collections::BTreeMap, ops::AddAssign};
 
+use entropic::prelude::*;
+
 pub fn to_per_visible(
     constraints: Vec<Constraint>,
     character_string_type: Option<CharacterStringType>,
@@ -46,7 +48,7 @@ trait PerVisible {
     fn per_visible(&self) -> bool;
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Entropic, PartialEq)]
 pub enum CharsetSubset {
     Single(char),
     Range {
@@ -55,7 +57,7 @@ pub enum CharsetSubset {
     },
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Entropic, PartialEq)]
 pub struct PerVisibleAlphabetConstraints {
     string_type: CharacterStringType,
     character_by_index: BTreeMap<usize, char>,
@@ -219,7 +221,7 @@ impl AddAssign<&mut PerVisibleAlphabetConstraints> for PerVisibleAlphabetConstra
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Entropic)]
 pub struct PerVisibleRangeConstraints {
     min: Option<i128>,
     max: Option<i128>,

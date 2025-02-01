@@ -16,6 +16,8 @@ pub mod utils;
 
 use std::{borrow::Cow, cell::RefCell, collections::BTreeMap, ops::Add, rc::Rc};
 
+use entropic::prelude::*;
+
 use crate::common::INTERNAL_IO_FIELD_REF_TYPE_NAME_PREFIX;
 use constraints::Constraint;
 use error::{GrammarError, GrammarErrorType};
@@ -231,7 +233,7 @@ macro_rules! grammar_error {
     };
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct EncodingReferenceDefault(pub String);
 
 impl From<&str> for EncodingReferenceDefault {
@@ -242,7 +244,7 @@ impl From<&str> for EncodingReferenceDefault {
 
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, Copy, PartialEq, Default)]
+#[derive(Clone, Copy, Entropic, PartialEq, Default)]
 pub enum TaggingEnvironment {
     Automatic,
     #[default]
@@ -265,7 +267,7 @@ impl Add<&TaggingEnvironment> for &TaggingEnvironment {
 /// Rec. ITU-T X.680 (02/2021) § 13.4
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, Copy, PartialEq, Default)]
+#[derive(Clone, Copy, Entropic, PartialEq, Default)]
 pub enum ExtensibilityEnvironment {
     Implied,
     #[default]
@@ -276,7 +278,7 @@ pub enum ExtensibilityEnvironment {
 /// Rec. ITU-T X.680 (02/2021) § 13.16 (f)
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum With {
     Successors,
     Descendants,
@@ -284,7 +286,7 @@ pub enum With {
 
 /// Represents a global module reference as specified in
 /// Rec. ITU-T X.680 (02/2021)
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ExternalValueReference {
     pub module_reference: String,
     pub value_reference: String,
@@ -292,7 +294,7 @@ pub struct ExternalValueReference {
 
 /// Represents a global module reference as specified in
 /// Rec. ITU-T X.680 (02/2021)
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct GlobalModuleReference {
     pub module_reference: String,
     pub assigned_identifier: AssignedIdentifier,
@@ -311,7 +313,7 @@ impl From<(&str, AssignedIdentifier)> for GlobalModuleReference {
 /// Rec. ITU-T X.680 (02/2021)
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum AssignedIdentifier {
     ObjectIdentifierValue(ObjectIdentifierValue),
     ExternalValueReference(ExternalValueReference),
@@ -325,7 +327,7 @@ pub enum AssignedIdentifier {
 
 /// Represents a module import as specified in
 /// Rec. ITU-T X.680 (02/2021) § 13.16
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct Import {
     pub types: Vec<String>,
     pub global_module_reference: GlobalModuleReference,
@@ -352,7 +354,7 @@ impl From<(Vec<&str>, (GlobalModuleReference, Option<&str>))> for Import {
 /// Rec. ITU-T X.680 (02/2021) § 13.13
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum Exports {
     Identifier(Vec<String>),
     All,
@@ -368,7 +370,7 @@ impl From<Vec<&str>> for Exports {
 /// Rec. ITU-T X.680 (02/2021) § 13.8
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum DefinitiveIdentifier {
     DefinitiveOID(ObjectIdentifierValue),
     DefinitiveOIDandIRI {
@@ -392,7 +394,7 @@ impl From<(ObjectIdentifierValue, Option<&str>)> for DefinitiveIdentifier {
 
 /// Represents a module header as specified in
 /// Rec. ITU-T X.680 (02/2021) § 13
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ModuleReference {
     pub name: String,
     pub module_identifier: Option<DefinitiveIdentifier>,
@@ -458,7 +460,7 @@ impl
 
 /// Represents an object identifier value as specified in
 /// Rec. ITU-T X.680 (02/2021) §32
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ObjectIdentifierValue(pub Vec<ObjectIdentifierArc>);
 
 impl From<Vec<ObjectIdentifierArc>> for ObjectIdentifierValue {
@@ -469,7 +471,7 @@ impl From<Vec<ObjectIdentifierArc>> for ObjectIdentifierValue {
 
 /// Represents a single arc of an object identifier value
 /// as specified in Rec. ITU-T X.680 (02/2021) §32
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ObjectIdentifierArc {
     pub name: Option<String>,
     pub number: Option<u128>,
@@ -502,6 +504,8 @@ impl From<(&str, u128)> for ObjectIdentifierArc {
     }
 }
 
+// TODO: Implement Serialize for TopLevelDefinition
+
 /// Represents a top-level ASN.1 definition.
 /// The compiler distinguished three different variants of top-level definitions.
 /// * `Type` definitions define custom types based on ASN.1's built-in types
@@ -512,7 +516,7 @@ impl From<(&str, u128)> for ObjectIdentifierArc {
 /// order to generate bindings.
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ToplevelDefinition {
     Type(ToplevelTypeDefinition),
     Value(ToplevelValueDefinition),
@@ -629,7 +633,7 @@ impl ToplevelDefinition {
 
 /// Represents a top-level definition of a value
 /// using a custom or built-in ASN.1 type.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ToplevelValueDefinition {
     pub comments: String,
     pub name: String,
@@ -681,7 +685,7 @@ impl
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ToplevelTypeDefinition {
     pub comments: String,
     pub tag: Option<AsnTag>,
@@ -742,7 +746,7 @@ impl
 /// specified in the same or an imported ASN1 specification.
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ASN1Type {
     Null,
     Boolean(Boolean),
@@ -986,7 +990,7 @@ pub const PRINTABLE_STRING_CHARSET: [char; 74] = [
 /// The types of an ASN1 character strings.
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq, Copy)]
+#[derive(Clone, Entropic, PartialEq, Copy)]
 pub enum CharacterStringType {
     NumericString,
     VisibleString,
@@ -1041,7 +1045,7 @@ impl From<&str> for CharacterStringType {
 }
 
 /// Representation of common integer types
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, Entropic, PartialEq)]
 pub enum IntegerType {
     Int8,
     Uint8,
@@ -1097,7 +1101,7 @@ impl IntegerType {
 /// The possible types of an ASN1 value.
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum ASN1Value {
     All,
     Null,
@@ -1165,7 +1169,7 @@ pub enum ASN1Value {
 /// Representation of a field value of a struct-like ASN1 value
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum StructLikeFieldValue {
     Explicit(Box<ASN1Value>),
     Implicit(Box<ASN1Value>),
@@ -1282,7 +1286,7 @@ impl ASN1Value {
 /// Intermediate placeholder for a type declared in
 /// some other part of the ASN1 specification that is
 /// being parsed or in one of its imports.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct DeclarationElsewhere {
     /// Chain of parent declaration leading back to a basic ASN1 type
     pub parent: Option<String>,
@@ -1301,7 +1305,7 @@ impl From<(Option<&str>, &str, Option<Vec<Constraint>>)> for DeclarationElsewher
 }
 
 /// Tag classes
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, Entropic, PartialEq)]
 pub enum TagClass {
     Universal,
     Application,
@@ -1310,7 +1314,7 @@ pub enum TagClass {
 }
 
 /// Representation of a tag
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct AsnTag {
     pub environment: TaggingEnvironment,
     pub tag_class: TagClass,

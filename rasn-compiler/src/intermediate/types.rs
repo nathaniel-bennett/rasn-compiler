@@ -4,6 +4,8 @@
 use internal_macros::EnumDebug;
 use std::vec;
 
+use entropic::prelude::*;
+
 use super::{constraints::*, *};
 
 /// Trait shared by ASN1 `SET`, `SEQUENCE`, AND `CHOICE` that allows iterating
@@ -52,7 +54,7 @@ constrainable!(Time);
 /// Representation of an ASN1 BOOLEAN data element
 /// with corresponding constraints.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §18*
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, Entropic, PartialEq, Default)]
 pub struct Boolean {
     pub constraints: Vec<Constraint>,
 }
@@ -68,7 +70,7 @@ impl From<Option<Vec<Constraint>>> for Boolean {
 /// Representation of an ASN1 INTEGER data element
 /// with corresponding constraints and distinguished values.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §19*
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, Entropic, PartialEq, Default)]
 pub struct Integer {
     pub constraints: Vec<Constraint>,
     pub distinguished_values: Option<Vec<DistinguishedValue>>,
@@ -142,7 +144,7 @@ impl
 /// Representation of an ASN1 REAL data element
 /// with corresponding constraints.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §21*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct Real {
     pub constraints: Vec<Constraint>,
 }
@@ -158,7 +160,7 @@ impl From<Option<Vec<Constraint>>> for Real {
 /// Representation of an ASN1 GeneralizedTime data element
 /// with corresponding constraints.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §46*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct GeneralizedTime {
     pub constraints: Vec<Constraint>,
 }
@@ -166,7 +168,7 @@ pub struct GeneralizedTime {
 /// Representation of an ASN1 Universal time (a.k.a UTCTime)
 /// data element with corresponding constraints.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §47*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct UTCTime {
     pub constraints: Vec<Constraint>,
 }
@@ -174,7 +176,7 @@ pub struct UTCTime {
 /// Representation of an ASN1 OCTET STRING data element
 /// with corresponding constraints.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §23*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct OctetString {
     pub constraints: Vec<Constraint>,
 }
@@ -191,7 +193,7 @@ impl From<Option<Vec<Constraint>>> for OctetString {
 /// with corresponding constraints and distinguished values
 /// defining the individual bits.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §22*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct BitString {
     pub constraints: Vec<Constraint>,
     pub distinguished_values: Option<Vec<DistinguishedValue>>,
@@ -209,7 +211,7 @@ impl From<(Option<Vec<DistinguishedValue>>, Option<Vec<Constraint>>)> for BitStr
 /// Representation of an ASN1 OBJECT IDENTIFIER data element
 /// with corresponding constraints.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §32*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ObjectIdentifier {
     pub constraints: Vec<Constraint>,
 }
@@ -225,7 +227,7 @@ impl From<Option<Vec<Constraint>>> for ObjectIdentifier {
 /// Representation of an ASN1 TIME data element
 /// with corresponding constraints.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §38*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct Time {
     pub constraints: Vec<Constraint>,
 }
@@ -242,7 +244,7 @@ impl From<Option<Vec<Constraint>>> for Time {
 /// with corresponding constraints. ASN1 Character String types
 /// include IA5String, UTF8String, VideotexString.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §39-*§44
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct CharacterString {
     pub constraints: Vec<Constraint>,
     pub ty: CharacterStringType,
@@ -264,7 +266,7 @@ impl From<(&str, Option<Vec<Constraint>>)> for CharacterString {
 /// holds this struct as a value (i.e. `ASN1Type::SetOf(SequenceOrSetOf { .. })`
 /// or `ASN1Type::SequenceOf(SequenceOrSetOf { .. })`).
 /// *As defined in Rec. ITU-T X.680 (02/2021) §26 and §28*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct SequenceOrSetOf {
     pub constraints: Vec<Constraint>,
     /// [ASN.1 type](ASN1Type) of the individual elements of the collection
@@ -301,7 +303,7 @@ impl From<(Option<Vec<Constraint>>, ASN1Type)> for SequenceOrSetOf {
 /// holds this struct as a value (i.e. `ASN1Type::Set(SequenceOrSet { .. })`
 /// or `ASN1Type::Sequence(SequenceOrSet { .. })`).
 /// *As defined in Rec. ITU-T X.680 (02/2021) §25 and §27*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct SequenceOrSet {
     pub components_of: Vec<String>,
     pub extensible: Option<usize>,
@@ -400,7 +402,7 @@ impl
 /// will subsequently try to resolve the `components_of` identifiers.
 #[cfg_attr(test, derive(EnumDebug))]
 #[cfg_attr(not(test), derive(Debug))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Entropic, PartialEq)]
 pub enum SequenceComponent {
     Member(SequenceOrSetMember),
     ComponentsOf(String),
@@ -445,7 +447,7 @@ pub enum SequenceComponent {
 /// }
 /// # ;
 /// ```
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct SequenceOrSetMember {
     pub name: String,
     pub tag: Option<AsnTag>,
@@ -491,7 +493,7 @@ impl
 /// Representation of an ASN1 CHOICE data element
 /// with corresponding members and extension information.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §29*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct Choice {
     pub extensible: Option<usize>,
     pub options: Vec<ChoiceOption>,
@@ -555,7 +557,7 @@ impl
 /// }
 /// # ;
 /// ```
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ChoiceOption {
     pub name: String,
     pub tag: Option<AsnTag>,
@@ -579,7 +581,7 @@ impl From<(&str, Option<AsnTag>, ASN1Type, Option<Vec<Constraint>>)> for ChoiceO
 /// Representation of an ASN1 ENUMERATED data element
 /// with corresponding enumerals and extension information.
 /// *As defined in Rec. ITU-T X.680 (02/2021) §20*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct Enumerated {
     pub members: Vec<Enumeral>,
     pub extensible: Option<usize>,
@@ -630,7 +632,7 @@ impl
 /// }
 /// # ;
 /// ```
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct Enumeral {
     pub name: String,
     pub description: Option<String>,
@@ -640,7 +642,7 @@ pub struct Enumeral {
 /// Representation of a ASN1 distinguished value,
 /// as seen in some INTEGER and BIT STRING declarations
 /// *As defined in Rec. ITU-T X.680 (02/2021) §19.5 and §22.4*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct DistinguishedValue {
     pub name: String,
     pub value: i128,
@@ -657,7 +659,7 @@ impl From<(&str, i128)> for DistinguishedValue {
 
 /// Representation of a ASN1 selection type as used with ASN1 CHOICEs
 /// *As defined in Rec. ITU-T X.680 (02/2021) §30*
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Entropic, PartialEq)]
 pub struct ChoiceSelectionType {
     pub choice_name: String,
     pub selected_option: String,
